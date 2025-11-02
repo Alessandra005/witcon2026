@@ -400,7 +400,7 @@ return (
                         {errors.confirmEmail && <div className="text-red-600 text-sm mt-1">{errors.confirmEmail}</div>}
                     </div>
 
-                    /<div>
+                    <div>
                         <label htmlFor="password" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Password *</label>
                         <input
                             id="password"
