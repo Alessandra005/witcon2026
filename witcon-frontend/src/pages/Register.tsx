@@ -168,6 +168,7 @@ export default function Register() {
 
     const shirtSizes = ['S', 'M', 'L', 'XL'];
     const allergyOptions = ['Peanuts', 'Tree Nuts', 'Dairy', 'Gluten', 'Shellfish', 'Soy', 'Eggs'];
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     // Handle input change
     const handleInputChange = (field: keyof FormData, value: string | boolean) => {
@@ -234,7 +235,7 @@ export default function Register() {
         if (formData.school === 'Florida International University' && formData.pantherID && !validatePantherID(formData.pantherID)) {
             newErrors.pantherID = 'Invalid Panther ID';
         }
-        
+
         //Resume and Agreements
         if (!resumeFile) newErrors.resume = 'Required';
         if (!formData.shirtSize) newErrors.shirtSize = 'Required';
@@ -248,6 +249,7 @@ export default function Register() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        console.log("Submit triggered");
         setErrors({});
 
         if (!validateForm()) return;
@@ -257,12 +259,23 @@ export default function Register() {
 
         const fd = new FormData();
 
+        console.log("foodAllergies before stringify:", formData.foodAllergies); // Debug log
         Object.entries(formData).forEach(([k, v]) => {
             if (v === undefined || v === null) return;
-            fd.append(k, String(v));
+            if (Array.isArray(v)) {
+                fd.set(k, JSON.stringify(v));
+            } else {
+                fd.set(k, String(v));
+            }
         });
 
         if (resumeFile) fd.append('resume', resumeFile);
+
+        // Debug: Log FormData contents
+        console.log("FormData being sent:");
+        for (let pair of fd.entries()) {
+            console.log(pair[0], pair[1]);
+        }
 
         try {
             const res = await fetch(url, { method: "POST", body: fd });
@@ -295,11 +308,16 @@ export default function Register() {
 
 return (
         <section className="space-y-4">
-            <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold">Registration</h2>
+            <div className="text-center space-y-2 mb-6">
+                <h2 className="text-3xl font-bold text-[color:var(--color-primary-pink)]"
+                style={{ fontFamily: 'Bukhari, sans-serif' }}>Welcome to WiTCON! Please register here!</h2>
                 <div className="text-sm space-x-4">
-                    <span>Already registered? <a href="#" className="text-blue-600 underline">Log in</a></span>
-                    <span><a href="#" className="text-blue-600 underline">Reset password</a></span>
+                    <span>
+                        Already registered? <a href="#" className="text-blue-600 underline hover:text-blue-800">Log in</a>
+                    </span>
+                    <span>
+                        <a href="#" className="text-blue-600 underline hover:text-blue-800">Reset password</a>
+                    </span>
                 </div>
             </div>
 
@@ -311,102 +329,117 @@ return (
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Basic Information */}
-                <div className="bg-white border rounded p-4 space-y-4">
-                    <h3 className="font-semibold">Basic Information</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div className="bg-[color:var(--color-tertiary-yellow)] rounded-xl p-6 shadow-sm space-y-6">
+                <div className="flex justify-between items-start">
+                    <h3 className="text-2xl font-bold text-[color:var(--color-primary-pink)]"
+                    style={{ fontFamily: 'Actor, sans-serif' }}>Register here</h3>
+
+                    <div className="text-right text-sm">
+                        <span className="text-gray-700 mr-2">Already Registered?</span>
+                        <button
+                            type="button"
+                            className="bg-[color:var(--color-primary-yellow)] text-white font-semibold px-3 py-1 rounded-md hover:bg-yellow-500 transition"
+                        >
+                            Click Here
+                        </button>
+                    </div>
+                </div>
+      
+                    <div className="grid grid-cols-1 gap-4">
                         <div>
-                            <label htmlFor="firstName" className="block font-medium">First Name *</label>
+                            <label htmlFor="firstName" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">First Name *</label>
                             <input
                                 id="firstName"
                                 type="text"
                                 value={formData.firstName}
                                 onChange={(e) => handleInputChange('firstName', e.target.value)}
-                                className="w-full border rounded px-3 py-2"
+                                className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                                 required
                             />
-                            {errors.firstName && <div className="text-red-600 text-sm">{errors.firstName}</div>}
+                            {errors.firstName && <div className="text-red-600 text-sm mt-1">{errors.firstName}</div>}
                         </div>
                         
                         <div>
-                            <label htmlFor="lastName" className="block font-medium">Last Name *</label>
+                            <label htmlFor="lastName" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Last Name *</label>
                             <input
                                 id="lastName"
                                 type="text"
                                 value={formData.lastName}
                                 onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                className="w-full border rounded px-3 py-2"
+                                className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                                 required
                             />
-                            {errors.lastName && <div className="text-red-600 text-sm">{errors.lastName}</div>}
+                            {errors.lastName && <div className="text-red-600 text-sm mt-1">{errors.lastName}</div>}
                         </div>
                     </div>
 
                     <div>
-                        <label htmlFor="email" className="block font-medium">Email *</label>
+                        <label htmlFor="email" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Email *</label>
                         <input
                             id="email"
                             type="email"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         />
-                        {errors.email && <div className="text-red-600 text-sm">{errors.email}</div>}
+                        {errors.email && <div className="text-red-600 text-sm  mt-1">{errors.email}</div>}
                     </div>
 
                     <div>
-                        <label htmlFor="confirmEmail" className="block font-medium">Confirm Email *</label>
+                        <label htmlFor="confirmEmail" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Confirm Email *</label>
                         <input
                             id="confirmEmail"
                             type="email"
                             value={formData.confirmEmail}
                             onChange={(e) => handleInputChange('confirmEmail', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         />
-                        {errors.confirmEmail && <div className="text-red-600 text-sm">{errors.confirmEmail}</div>}
+                        {errors.confirmEmail && <div className="text-red-600 text-sm mt-1">{errors.confirmEmail}</div>}
                     </div>
 
-                    <div>
-                        <label htmlFor="password" className="block font-medium">Password *</label>
+                    /<div>
+                        <label htmlFor="password" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Password *</label>
                         <input
                             id="password"
                             type="password"
                             value={formData.password}
                             onChange={(e) => handleInputChange('password', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         />
-                        {errors.password && <div className="text-red-600 text-sm">{errors.password}</div>}
+                        {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
                     </div>
 
                     <div>
-                        <label htmlFor="dateOfBirth" className="block font-medium">Date of Birth *</label>
+                        <label htmlFor="dateOfBirth" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Date of Birth *</label>
                         <input
                             id="dateOfBirth"
                             type="date"
                             value={formData.dateOfBirth}
                             onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         />
-                        <div className="text-sm text-gray-600">Must be 18 or older by March 27, 2026</div>
-                        {errors.dateOfBirth && <div className="text-red-600 text-sm">{errors.dateOfBirth}</div>}
+                        <div className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Must be 18 or older by March 27, 2026</div>
+                        {errors.dateOfBirth && <div className="text-red-600 text-sm mt-1">{errors.dateOfBirth}</div>}
                     </div>
                 </div>
+                
 
                 {/* Demographics */}
-                <div className="bg-white border rounded p-4 space-y-4">
-                    <h3 className="font-semibold">Demographics</h3>
-                    
+                <div className="bg-[color:var(--color-tertiary-yellow)] rounded-xl p-6 shadow-sm space-y-6">
+                    <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>
+                        Demographics</h3>
                     <div>
-                        <label htmlFor="country" className="block font-medium">Country of Residence *</label>
+                        <label htmlFor="country" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Country of Residence *</label>
                         <select
                             id="country"
                             value={formData.country}
                             onChange={(e) => handleInputChange('country', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         >
                             <option value="">Select a country</option>
@@ -419,12 +452,12 @@ return (
 
                     {formData.country === 'United States' && (
                         <div>
-                            <label htmlFor="state" className="block font-medium">State of Residence *</label>
+                            <label htmlFor="state" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">State of Residence *</label>
                             <select
                                 id="state"
                                 value={formData.state}
                                 onChange={(e) => handleInputChange('state', e.target.value)}
-                                className="w-full border rounded px-3 py-2"
+                                className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                                 required
                             >
                                 <option value="">Select a state</option>
@@ -432,46 +465,47 @@ return (
                                     <option key={state} value={state}>{state}</option>
                                 ))}
                             </select>
-                            {errors.state && <div className="text-red-600 text-sm">{errors.state}</div>}
+                            {errors.state && <div className="text-red-600 text-sm mt-1">{errors.state}</div>}
                         </div>
                     )}
 
-{/* { <div>
-    <label htmlFor="genderIdentity" className="block font-medium">Gender Identity *</label>
-    <select
-        id="genderIdentity"
-        value={formData.genderIdentity[0] || ''} // store single selection in array
-        onChange={(e) => handleInputChange('genderIdentity', [e.target.value])}
-        className="w-full border rounded px-3 py-2"
-        required
-    >
-        <option value="">Select gender identity</option>
-        {genderOptions.map(option => (
-            <option key={option} value={option}>{option}</option>
-        ))}
-    </select>
+                {/* Gender */}
+                <div>
+                    <label htmlFor="gender" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Gender *</label>
+                    <select
+                        id="gender"
+                        value={formData.gender}
+                        onChange={(e) => handleInputChange('gender', e.target.value)}
+                        className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
+                        required
+                    >
+                        <option value="">Select gender</option>
+                        {genderOptions.map((g) => (
+                            <option key={g} value={g}>{g}</option>
+                        ))}
+                    </select>
+                {       formData.gender === 'Other' && (
+                    <input
+                        type="text"
+                        placeholder="Please specify"
+                        value={formData.genderOther}
+                        onChange={(e) => handleInputChange('genderOther', e.target.value)}
+                        className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
 
-    {formData.genderIdentity.includes('Other') && (
-        <input
-            type="text"
-            placeholder="Please specify"
-            value={formData.genderOther}
-            onChange={(e) => handleInputChange('genderOther', e.target.value)}
-            className="w-full border rounded px-3 py-2 mt-2"
-        />
-    )}
-
-    {errors.genderIdentity && <div className="text-red-600 text-sm">{errors.genderIdentity}</div>}
-</div>} */}
+                        required
+                    />
+                        )}
+                        {errors.gender && <div className="text-red-600 text-sm mt-1">{errors.gender}</div>}
+                    </div>
 
 
                     <div>
-                        <label htmlFor="raceEthnicity" className="block font-medium">Race or Ethnicity *</label>
+                        <label htmlFor="raceEthnicity" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Race or Ethnicity *</label>
                         <select
                             id="raceEthnicity"
                             value={formData.raceEthnicity}
                             onChange={(e) => handleInputChange('raceEthnicity', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         >
                             <option value="">Select an option</option>
@@ -485,24 +519,25 @@ return (
                                 placeholder="Please specify"
                                 value={formData.raceOther}
                                 onChange={(e) => handleInputChange('raceOther', e.target.value)}
-                                className="w-full border rounded px-3 py-2 mt-2"
+                                className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             />
                         )}
-                        {errors.raceEthnicity && <div className="text-red-600 text-sm">{errors.raceEthnicity}</div>}
+                        {errors.raceEthnicity && <div className="text-red-600 text-sm mt-1">{errors.raceEthnicity}</div>}
                     </div>
                 </div>
 
                 {/* Academic Information */}
-                <div className="bg-white border rounded p-4 space-y-4">
-                    <h3 className="font-semibold">Academic Information</h3>
+                <div className="bg-[color:var(--color-secondary-pink)] rounded-xl p-6 shadow-sm space-y-6">
+                    <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Academic Information</h3>
                     
+                    {/* Level of Study */}
                     <div>
-                        <label htmlFor="levelOfStudy" className="block font-medium">Current Level of Study *</label>
+                        <label htmlFor="levelOfStudy" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Current Level of Study *</label>
                         <select
                             id="levelOfStudy"
                             value={formData.levelOfStudy}
                             onChange={(e) => handleInputChange('levelOfStudy', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         >
                             <option value="">Select level</option>
@@ -510,27 +545,29 @@ return (
                                 <option key={level} value={level}>{level}</option>
                             ))}
                         </select>
-                        {errors.levelOfStudy && <div className="text-red-600 text-sm">{errors.levelOfStudy}</div>}
+                        {errors.levelOfStudy && <div className="text-red-600 text-sm mt-1">{errors.levelOfStudy}</div>}
                     </div>
 
-                    {/*formData.levelOfStudy === 'Undergraduate' && (
-                        <div>
-                            <label htmlFor="yearLevel" className="block font-medium">Year Level *</label>
-                            <select
-                                id="yearLevel"
-                                value={formData.yearLevel}
-                                onChange={(e) => handleInputChange('yearLevel', e.target.value)}
-                                className="w-full border rounded px-3 py-2"
-                                required
-                            >
-                                <option value="">Select year</option>
-                                {yearLevels.map(year => (
+                    {/* Year Level (only if Undergraduate) */}
+                    {formData.levelOfStudy === 'Undergraduate' && (
+                    <div>
+                        <label htmlFor="yearLevel" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Year Level *</label>
+                        <select
+                            id="yearLevel"
+                            value={formData.yearLevel}
+                            onChange={(e) => handleInputChange('yearLevel', e.target.value)}
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
+                            required
+                    >
+                            <option value="">Select year</option>
+                             {yearLevels.map(year => (
                                     <option key={year} value={year}>{year}</option>
-                                ))}
-                            </select>
-                            {errors.yearLevel && <div className="text-red-600 text-sm">{errors.yearLevel}</div>}
-                        </div>
-                    )*/}
+                            ))}
+                        </select>
+                        {errors.yearLevel && <div className="text-red-600 text-sm mt-1">{errors.yearLevel}</div>}
+                    </div>
+                    )}
+
 
                     {formData.levelOfStudy === 'Other' && (
                         <input
@@ -538,17 +575,17 @@ return (
                             placeholder="Please specify level of study"
                             value={formData.studyOther}
                             onChange={(e) => handleInputChange('studyOther', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                         />
                     )}
 
                     <div>
-                        <label htmlFor="fieldOfStudy" className="block font-medium">Field of Study *</label>
+                        <label htmlFor="fieldOfStudy" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Field of Study *</label>
                         <select
                             id="fieldOfStudy"
                             value={formData.fieldOfStudy}
                             onChange={(e) => handleInputChange('fieldOfStudy', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         >
                             <option value="">Select field</option>
@@ -562,19 +599,19 @@ return (
                                 placeholder="Please specify field of study"
                                 value={formData.fieldOther}
                                 onChange={(e) => handleInputChange('fieldOther', e.target.value)}
-                                className="w-full border rounded px-3 py-2 mt-2"
+                                className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             />
                         )}
-                        {errors.fieldOfStudy && <div className="text-red-600 text-sm">{errors.fieldOfStudy}</div>}
+                        {errors.fieldOfStudy && <div className="text-red-600 text-sm mt-1">{errors.fieldOfStudy}</div>}
                     </div>
 
                     <div>
-                        <label htmlFor="school" className="block font-medium">School *</label>
+                        <label htmlFor="school" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">School *</label>
                         <select
                             id="school"
                             value={formData.school}
                             onChange={(e) => handleInputChange('school', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         >
                             <option value="">Select school</option>
@@ -588,127 +625,112 @@ return (
                                 placeholder="Please specify school"
                                 value={formData.schoolOther}
                                 onChange={(e) => handleInputChange('schoolOther', e.target.value)}
-                                className="w-full border rounded px-3 py-2 mt-2"
+                                className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             />
                         )}
-                        {errors.school && <div className="text-red-600 text-sm">{errors.school}</div>}
+                        {errors.school && <div className="text-red-600 text-sm mt-1">{errors.school}</div>}
                     </div>
 
                     {formData.school === 'Florida International University' && (
                         <div>
-                            <label htmlFor="pantherID" className="block font-medium">Panther ID *</label>
+                            <label htmlFor="pantherID" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">Panther ID *</label>
                             <input
                                 id="pantherID"
                                 type="text"
                                 value={formData.pantherID}
                                 onChange={(e) => handleInputChange('pantherID', e.target.value)}
-                                className="w-full border rounded px-3 py-2"
+                                className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                                 placeholder="7 digits"
                                 maxLength={7}
                                 required
                             />
                             <div className="text-sm text-gray-600">Must be 7 digits</div>
-                            {errors.pantherID && <div className="text-red-600 text-sm">{errors.pantherID}</div>}
+                            {errors.pantherID && <div className="text-red-600 text-sm mt-1">{errors.pantherID}</div>}
                         </div>
                     )}
                 </div>
 
                 {/* Social Profiles */}
-                <div className="bg-white border rounded p-4 space-y-4">
-                    <h3 className="font-semibold">Social Profiles (Optional)</h3>
+                <div className="bg-[color:var(--color-secondary-pink)] rounded-xl p-6 shadow-sm space-y-6">
+                    <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Social Profiles (Optional)</h3>
                     
                     <div>
-                        <label htmlFor="linkedin" className="block font-medium">LinkedIn</label>
+                        <label htmlFor="linkedin" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">LinkedIn</label>
                         <input
                             id="linkedin"
                             type="url"
                             value={formData.linkedin}
                             onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             placeholder="https://linkedin.com/in/yourprofile"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="github" className="block font-medium">GitHub Profile</label>
+                        <label htmlFor="github" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">GitHub Profile</label>
                         <input
                             id="github"
                             type="url"
                             value={formData.github}
                             onChange={(e) => handleInputChange('github', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             placeholder="https://github.com/yourusername"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="website" className="block font-medium">Personal Website</label>
+                        <label htmlFor="website" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Personal Website</label>
                         <input
                             id="website"
                             type="url"
                             value={formData.website}
                             onChange={(e) => handleInputChange('website', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             placeholder="https://yourwebsite.com"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="discord" className="block font-medium">Discord Username</label>
+                        <label htmlFor="discord" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Discord Username</label>
                         <input
                             id="discord"
                             type="text"
                             value={formData.discord}
                             onChange={(e) => handleInputChange('discord', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             placeholder="username#1234"
                         />
                     </div>
-                </div>
-
-                {/* Additional Information */}
-                <div className="bg-white border rounded p-4 space-y-4">
-                    <h3 className="font-semibold">Additional Information</h3>
                     
+                    {/* Resume */}
                     <div>
-                        <label htmlFor="resume" className="block font-medium">Resume *</label>
+                        <label htmlFor="resume" className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Resume Upload*</label>
+                        <div className="border-2 border-dashed border-[color:var(--color-primary-pink)] rounded-xl p-4 bg-white text-center hover:border-pink-500 transition">
                         <input
                             id="resume"
                             type="file"
                             onChange={handleFileChange}
-                            className="w-full border rounded px-3 py-2"
-                            accept=".pdf,.doc,.docx"
+                            className="w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[color:var(--color-primary-pink)] file:text-white hover:file:bg-pink-600"
+                            accept=".pdf"
                             required
                         />
-                        {errors.resume && <div className="text-red-600 text-sm">{errors.resume}</div>}
+                        {errors.resume && <div className="text-red-600 text-sm mt-2">{errors.resume}</div>}
+                        </div>
                     </div>
+                </div>
 
-{/* <div>
-    <label htmlFor="foodAllergies" className="block font-medium">Food Allergies/Restrictions (Optional)</label>
-    <select
-        id="foodAllergies"
-        multiple
-        value={formData.foodAllergies}
-        onChange={(e) => {
-            const options = Array.from(e.target.selectedOptions, option => option.value);
-            handleInputChange('foodAllergies', options);
-        }}
-        className="w-full border rounded px-3 py-2"
-    >
-        {allergyOptions.map(allergy => (
-            <option key={allergy} value={allergy}>{allergy}</option>
-        ))}
-    </select>
-</div> */}
-
-
+                {/* Additional Information */}
+                <div className="bg-[color:var(--color-secondary-mint)] rounded-xl p-6 shadow-sm space-y-6">
+                    <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Additional Information</h3>
+                    
+                    {/* Shirt size */}
                     <div>
-                        <label htmlFor="shirtSize" className="block font-medium">Shirt Size *</label>
+                        <label htmlFor="shirtSize" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Shirt Size *</label>
                         <select
                             id="shirtSize"
                             value={formData.shirtSize}
                             onChange={(e) => handleInputChange('shirtSize', e.target.value)}
-                            className="w-full border rounded px-3 py-2"
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
                             required
                         >
                             <option value="">Select size</option>
@@ -716,12 +738,83 @@ return (
                                 <option key={size} value={size}>{size}</option>
                             ))}
                         </select>
-                        {errors.shirtSize && <div className="text-red-600 text-sm">{errors.shirtSize}</div>}
+                        {errors.shirtSize && <div className="text-red-600 text-sm mt-1">{errors.shirtSize}</div>}
                     </div>
+
+                {/* Food Allergies dropdown */}
+                <div className="relative">
+                    <label htmlFor="foodAllergies" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Food Allergies</label>
+                    {/* Dropdown container */}
+                    <button
+                        type="button"
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
+                    >
+                        {formData.foodAllergies.length > 0
+                            ? formData.foodAllergies.join(", ")
+                            : "Select allergies"}
+                        <span className="ml-2">
+                            {isDropdownOpen ? "▲" : "▼"}
+                        </span>
+                    </button>
+
+                    {/* Dropdown menu */}
+                    {isDropdownOpen && (
+                        <div className="mt-2 space-y-2">
+                            {allergyOptions.map((allergy) => (
+                                <div key={allergy} className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        value={allergy}
+                                        checked={formData.foodAllergies.includes(allergy)}
+                                        onChange={() => {
+                                            const selected = formData.foodAllergies.includes(allergy)
+                                                ? formData.foodAllergies.filter((a) => a !== allergy)
+                                                : [...formData.foodAllergies, allergy];
+                                            handleInputChange("foodAllergies", selected);
+                                        }}
+                                        className="accent-[color:var(--color-primary-pink)] w-4 h-4"
+                                    />
+                                    <span className="text-m text-[color:var(--color-primary-brown)]">{allergy}</span>
+                                </div>
+                            ))}
+                    
+                    {/* "Other" option */}
+                    <div className="flex items-center gap-2 mt-2">
+                        <input
+                            type="checkbox"
+                            value="Other"
+                            checked={formData.foodAllergies.includes("Other")}
+                            onChange={() => {
+                                const selected = formData.foodAllergies.includes("Other")
+                                    ? formData.foodAllergies.filter((a) => a !== "Other")
+                                    : [...formData.foodAllergies, "Other"];
+                                handleInputChange("foodAllergies", selected);
+                        }}
+                        className="accent-[color:var(--color-primary-pink)] w-4 h-4"
+                    />
+                    <span className="text-m text-[color:var(--color-primary-brown)]">Other</span>
+                    </div>
+
+                    {/* Custom input when "Other" selected */}
+                    {formData.foodAllergies.includes("Other") && (
+                        <input
+                            type="text"
+                            placeholder="Please specify"
+                            value={formData.customAllergy || ""}
+                            onChange={(e) =>
+                                handleInputChange("customAllergy", e.target.value)
+                            }
+                            className="w-full border-2 border-primary rounded-md px-3 py-2 mt-2 text-textBrown focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30"
+                        />
+                    )}
                 </div>
+            )}
+        </div>
+        </div>
 
                 {/* Agreements */}
-                <div className="bg-white border rounded p-4 space-y-4">
+                <div className="block text-m font-medium text-[color:var(--color-primary-brown)]">
                     <h3 className="font-semibold">Agreements</h3>
                     
                     <div>
