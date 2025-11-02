@@ -12,7 +12,10 @@ interface FormData {
     state: string;
     raceEthnicity: string;
     raceOther: string;
+    gender: string;           
+    genderOther: string;
     levelOfStudy: string;
+    yearLevel: string;
     studyOther: string;
     fieldOfStudy: string;
     fieldOther: string;
@@ -24,6 +27,8 @@ interface FormData {
     website: string;
     discord: string;
     shirtSize: string;
+    foodAllergies: string[];
+    customAllergy: string;
     codeOfConduct: boolean;
     photographyConsent: boolean;
 }
@@ -44,7 +49,10 @@ export default function Register() {
         state: '',
         raceEthnicity: '',
         raceOther: '',
+        gender: '',
+        genderOther: '',
         levelOfStudy: '',
+        yearLevel: '',
         studyOther: '',
         fieldOfStudy: '',
         fieldOther: '',
@@ -56,6 +64,8 @@ export default function Register() {
         website: '',
         discord: '',
         shirtSize: '',
+        foodAllergies: [],
+        customAllergy: '',
         codeOfConduct: false,
         photographyConsent: false
     });
@@ -115,6 +125,9 @@ export default function Register() {
         'Prefer not to answer'
       ];
 
+    const yearLevels = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Prefer not to answer'];
+    const genderOptions = ['Woman', 'Man', 'Non-binary', 'Other'];
+
     const fieldsOfStudy = [
         'Computer Science',
         'Information Technology',
@@ -154,6 +167,7 @@ export default function Register() {
         'Other'];
 
     const shirtSizes = ['S', 'M', 'L', 'XL'];
+    const allergyOptions = ['Peanuts', 'Tree Nuts', 'Dairy', 'Gluten', 'Shellfish', 'Soy', 'Eggs'];
 
     // Handle input change
     const handleInputChange = (field: keyof FormData, value: string | boolean) => {
@@ -190,6 +204,7 @@ export default function Register() {
     const validateForm = () => {
         const newErrors: FormErrors = {};
 
+        //Basic Information
         if (!formData.firstName) newErrors.firstName = 'Required';
         if (!formData.lastName) newErrors.lastName = 'Required';
         if (!formData.email) newErrors.email = 'Required';
@@ -198,20 +213,36 @@ export default function Register() {
         if (!formData.password) newErrors.password = 'Required';
         if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Required';
         else if (!validateAge(formData.dateOfBirth)) newErrors.dateOfBirth = 'Must be 18 or older by March 27, 2026';
+        
+        //Demographics
         if (!formData.country) newErrors.country = 'Required';
         if (formData.country === 'United States' && !formData.state) newErrors.state = 'Required';
         if (!formData.raceEthnicity) newErrors.raceEthnicity = 'Required';
+        if (formData.raceEthnicity === 'Other' && !formData.raceOther) newErrors.raceOther = 'Required';
+        if (!formData.gender) newErrors.gender = 'Required';
+        if (formData.gender === 'Other' && !formData.genderOther) newErrors.genderOther = 'Required';
+
+        //Academic Information
         if (!formData.levelOfStudy) newErrors.levelOfStudy = 'Required';
+        if (formData.levelOfStudy === 'Undergraduate' && !formData.yearLevel) newErrors.yearLevel = 'Required';
+        if (formData.levelOfStudy === 'Other' && !formData.studyOther) newErrors.studyOther = 'Required';
         if (!formData.fieldOfStudy) newErrors.fieldOfStudy = 'Required';
+        if (formData.fieldOfStudy === 'Other' && !formData.fieldOther) newErrors.fieldOther = 'Required';
         if (!formData.school) newErrors.school = 'Required';
+        if (formData.school === 'Other' && !formData.schoolOther) newErrors.schoolOther = 'Required';
         if (formData.school === 'Florida International University' && !formData.pantherID) newErrors.pantherID = 'Required';
-        if (formData.school === 'Florida International University' && formData.pantherID && !validatePantherID(formData.pantherID)) newErrors.pantherID = 'Invalid Panther ID';
+        if (formData.school === 'Florida International University' && formData.pantherID && !validatePantherID(formData.pantherID)) {
+            newErrors.pantherID = 'Invalid Panther ID';
+        }
+        
+        //Resume and Agreements
         if (!resumeFile) newErrors.resume = 'Required';
         if (!formData.shirtSize) newErrors.shirtSize = 'Required';
         if (!formData.codeOfConduct) newErrors.codeOfConduct = 'Required';
         if (!formData.photographyConsent) newErrors.photographyConsent = 'Required';
 
         setErrors(newErrors);
+        console.log("Validation errors:", newErrors);
         return Object.keys(newErrors).length === 0;
     };
 

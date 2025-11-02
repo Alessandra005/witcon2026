@@ -56,7 +56,7 @@ class Attendee(models.Model):
         ('Other', 'Other'),
         ('Prefer not to answer', 'Prefer not to answer')
     ]
-    gender_identity = models.JSONField(default=list, blank=True)
+    gender_identity = models.CharField(max_length=50, choices=GENDER_OPTIONS, blank=True)
     gender_other = models.CharField(max_length=100, blank=True)
 
     RACE_OPTIONS = [
@@ -153,6 +153,7 @@ class Attendee(models.Model):
         ('Sesame', 'Sesame')
     ]
     food_allergies = models.JSONField(default=list, blank=True)
+    custom_allergy = models.CharField(max_length=100, blank=True)
 
     SHIRT_SIZES = [
         ('S','S'), ('M','M'), ('L','L'), ('XL','XL')

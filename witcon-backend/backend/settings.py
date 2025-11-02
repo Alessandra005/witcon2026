@@ -79,6 +79,23 @@ CORS_ALLOWED_ORIGINS = [
     "https://witcon2026.vercel.app",
     "https://witcon.duckdns.org",
 ]
+#Allowed headers
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+    "accept",
+    "origin",
+    "user-agent",
+    "referer",
+    "sec-fetch-mode",
+]
+# Allow Preflight Methods
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "OPTIONS",
+]
 
 # Media (uploads) config
 MEDIA_URL = "/media/"
