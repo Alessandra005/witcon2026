@@ -262,10 +262,11 @@ export default function Register() {
         console.log("foodAllergies before stringify:", formData.foodAllergies); // Debug log
         Object.entries(formData).forEach(([k, v]) => {
             if (v === undefined || v === null) return;
+            
             if (Array.isArray(v)) {
-                fd.set(k, JSON.stringify(v));
+                v.forEach(item => fd.append(`${k}[]`, item)); // DRF will handle this correctly
             } else {
-                fd.set(k, String(v));
+                fd.append(k, String(v));
             }
         });
 
