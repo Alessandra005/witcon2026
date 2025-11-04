@@ -171,7 +171,7 @@ export default function Register() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     // Handle input change
-    const handleInputChange = (field: keyof FormData, value: string | boolean) => {
+    const handleInputChange = (field: keyof FormData, value: string | string[] | boolean) => {
         setFormData(prev => ({
             ...prev,
             [field]: value
