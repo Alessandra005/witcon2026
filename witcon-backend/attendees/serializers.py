@@ -16,6 +16,7 @@ class AttendeeSerializer(serializers.ModelSerializer):
     country = serializers.CharField(required=False, allow_blank=True)
     state = serializers.CharField(required=False, allow_blank=True)
 
+<<<<<<< HEAD
     # lists -> JSONField in model
     # genderIdentity = serializers.ListField(
     #     source='gender_identity',
@@ -23,6 +24,8 @@ class AttendeeSerializer(serializers.ModelSerializer):
     #     required=False
     # )
     # genderOther = serializers.CharField(source='gender_other', required=False, allow_blank=True)
+=======
+>>>>>>> f3dbf84afae4a5237c934e043f666a3a165290b6
     gender = serializers.CharField(source='gender_identity',required=False, allow_blank=True)
     genderOther = serializers.CharField(source='gender_other', required=False, allow_blank=True)
 
@@ -52,6 +55,7 @@ class AttendeeSerializer(serializers.ModelSerializer):
 
     foodAllergies = serializers.ListField(
         child=serializers.CharField(),
+<<<<<<< HEAD
         source='food_allergies',
         required=False
     )
@@ -63,6 +67,12 @@ class AttendeeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Invalid format for food allergies.")
         return value
     customAllergy = serializers.CharField(source='custom_allergy', required=False, allow_blank=True)
+=======
+        required=False,
+        source='food_allergies',
+        allow_empty=True,
+    )
+>>>>>>> f3dbf84afae4a5237c934e043f666a3a165290b6
 
     shirtSize = serializers.CharField(source='shirt_size', required=False, allow_blank=True)
 
@@ -93,10 +103,9 @@ class AttendeeSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id', 'created_at', 'updated_at', 'checked_in')
 
-    # handle list fields that may arrive as JSON strings when multipart/form-data used
     def to_internal_value(self, data):
-        # data may be a QueryDict or dict-like; copy to mutate safely
         data = data.copy()
+<<<<<<< HEAD
 
         # if frontend sends arrays as JSON strings (common when FormData is used),
         # try to decode them into real lists
@@ -122,6 +131,70 @@ class AttendeeSerializer(serializers.ModelSerializer):
                     # fallback: comma separated values
                     data[list_key] = [x.strip() for x in val.split(',') if x.strip()]
         return super().to_internal_value(data)
+=======
+        raw = None
+        if hasattr(data, 'getlist'):
+            raw_list = data.getlist('foodAllergies')
+            if raw_list:
+                if len(raw_list) == 1:
+                    raw = raw_list[0]
+                else:
+                    raw = raw_list
+        if raw is None:
+            raw = data.get('foodAllergies')
+
+        if raw is not None:
+            normalized = []
+
+            def push(x):
+                if isinstance(x, str):
+                    s = x.strip()
+                    if (s.startswith('[') or s.startswith('{')):
+                        try:
+                            parsed = json.loads(s)
+                            push(parsed)
+                            return
+                        except Exception:
+                            pass
+                    if s != '':
+                        normalized.append(s)
+                    return
+
+                if isinstance(x, (list, tuple)):
+                    for item in x:
+                        push(item)
+                    return
+
+                if isinstance(x, dict):
+                    for item in x.values():
+                        push(item)
+                    return
+
+                normalized.append(str(x))
+
+            push(raw)
+
+            normalized = [str(i).strip() for i in normalized if str(i).strip()]
+            data['foodAllergies'] = normalized
+
+        return super().to_internal_value(data)
+    
+    def validate_foodAllergies(self, value):
+        # At this point value should be a list
+        if value in (None, ''):
+            return []
+        if not isinstance(value, list):
+            raise serializers.ValidationError("foodAllergies must be a list.")
+        cleaned = []
+        for i, item in enumerate(value):
+            if not isinstance(item, str):
+                # per-index error style
+                raise serializers.ValidationError({i: "Not a valid string."})
+            cleaned.append(item.strip())
+        return cleaned
+    
+    customAllergy = serializers.CharField(source='custom_allergy', required=False, allow_blank=True)
+>>>>>>> f3dbf84afae4a5237c934e043f666a3a165290b6
 
     # validate URLs if present (allow empty)
     def validate_linkedin(self, value):
@@ -145,14 +218,12 @@ class AttendeeSerializer(serializers.ModelSerializer):
         email = attrs.get('email')
         if confirm and email and confirm != email:
             raise serializers.ValidationError({'confirmEmail': 'Emails do not match'})
-        # remove it early
         attrs.pop('confirmEmail', None)
         return attrs
 
 
     # hash password and create Attendee
     def create(self, validated_data):
-    # Ensure confirmEmail doesn't sneak in
         validated_data.pop('confirmEmail', None)
 
         fa = validated_data.get("food_allergies")
@@ -173,6 +244,15 @@ class AttendeeSerializer(serializers.ModelSerializer):
 
     # small resume size validation
     def validate_resume(self, value):
-        if value and value.size > 5 * 1024 * 1024:
-            raise serializers.ValidationError("Resume size must be <= 5 MB")
+        if value and value.size > 600 * 1024:
+            raise serializers.ValidationError("Resume size must be <= 600 KB")
         return value
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.resume:
+            from .utils import generate_presigned_resume_url
+            data['resume_url'] = generate_presigned_resume_url(instance.resume.name)
+        else:
+            data['resume_url'] = None
+        return data

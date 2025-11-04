@@ -1,3 +1,4 @@
+// witcon-frontend/src/pages/Register.tsx
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 
@@ -68,7 +69,7 @@ export default function Register() {
         customAllergy: '',
         codeOfConduct: false,
         photographyConsent: false
-    });
+});
 
     const [resumeFile, setResumeFile] = useState<File | null>(null);
     const [errors, setErrors] = useState<FormErrors>({});
@@ -93,7 +94,7 @@ export default function Register() {
         'Other'
       ];
 
-    const usStates = [        'Prefer not to answer',
+    const usStates = ['Prefer not to answer',
         'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
         'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
         'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
@@ -123,7 +124,7 @@ export default function Register() {
         'Other',
         'I\'m not a student',
         'Prefer not to answer'
-      ];
+    ];
 
     const yearLevels = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Prefer not to answer'];
     const genderOptions = ['Woman', 'Man', 'Non-binary', 'Other'];
@@ -171,7 +172,7 @@ export default function Register() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     // Handle input change
-    const handleInputChange = (field: keyof FormData, value: string | string[] | boolean) => {
+    const handleInputChange = (field: keyof FormData, value: string | boolean | string[]) => {
         setFormData(prev => ({
             ...prev,
             [field]: value
@@ -264,12 +265,17 @@ export default function Register() {
             if (v === undefined || v === null) return;
             
             if (Array.isArray(v)) {
-                v.forEach(item => fd.append(`${k}[]`, item)); // DRF will handle this correctly
+                v.forEach(item => fd.append(`${k}[]`, item)); 
             } else {
                 fd.append(k, String(v));
             }
         });
 
+        if (resumeFile && resumeFile.size > 600 * 1024) {
+            alert("Resume file size must be 600 KB or smaller");
+            return;
+        }
+        
         if (resumeFile) fd.append('resume', resumeFile);
 
         // Debug: Log FormData contents
@@ -860,4 +866,3 @@ return (
         </section>
     );
 }
-

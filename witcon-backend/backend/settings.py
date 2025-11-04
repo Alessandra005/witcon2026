@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import json
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -61,6 +62,9 @@ INSTALLED_APPS = [
     'attendees',
 ]
 
+# Use django-storages S3 backend for media
+INSTALLED_APPS += ["storages"]
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -98,8 +102,8 @@ CORS_ALLOW_METHODS = [
 ]
 
 # Media (uploads) config
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = BASE_DIR / "media"
 
 # DRF config
 REST_FRAMEWORK = {
@@ -149,6 +153,23 @@ DATABASES = {
     }
 }
 
+# AWS S3 storage config (for storing resumes)
+
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "us-east-2")
+AWS_S3_SIGNATURE_VERSION = os.getenv("AWS_S3_SIGNATURE_VERSION", "s3v4")
+
+AWS_S3_OBJECT_PARAMETERS = json.loads(os.getenv("AWS_S3_OBJECT_PARAMETERS", '{"CacheControl":"max-age=86400"}'))
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+AWS_DEFAULT_ACL = None  # keep files private by default
+
+AWS_QUERYSTRING_AUTH = False  
+
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -186,22 +207,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# STATIC_ROOT = str(BASE_DIR / "staticfiles")
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),  # your app-level static files
-# ]
-
-# # This is required for collectstatic
-# STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
