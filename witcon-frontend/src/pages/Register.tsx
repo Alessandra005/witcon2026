@@ -261,13 +261,17 @@ export default function Register() {
         const fd = new FormData();
 
         console.log("foodAllergies before stringify:", formData.foodAllergies); // Debug log
-        Object.entries(formData).forEach(([k, v]) => {
-            if (v === undefined || v === null) return;
+        Object.entries(formData).forEach(([key, value]) => {
+            if (value === undefined || value === null) return;
             
-            if (Array.isArray(v)) {
-                v.forEach(item => fd.append(`${k}[]`, item)); 
+            if (key === "foodAllergies") { 
+                (value as string[]).forEach(item => {
+                    fd.append("food_allergies[]", item);
+                });
+            } else if (Array.isArray(value)) {
+                value.forEach(item => fd.append(`${key}[]`, item));
             } else {
-                fd.append(k, String(v));
+                fd.append(key, String(value));
             }
         });
 
@@ -319,12 +323,6 @@ return (
                 <h2 className="text-3xl font-bold text-[color:var(--color-primary-pink)]"
                 style={{ fontFamily: 'Bukhari, sans-serif' }}>Welcome to WiTCON! Please register here!</h2>
                 <div className="text-sm space-x-4">
-                    <span>
-                        Already registered? <a href="#" className="text-blue-600 underline hover:text-blue-800">Log in</a>
-                    </span>
-                    <span>
-                        <a href="#" className="text-blue-600 underline hover:text-blue-800">Reset password</a>
-                    </span>
                 </div>
             </div>
 
@@ -354,6 +352,7 @@ return (
                 </div>
       
                     <div className="grid grid-cols-1 gap-4">
+                    <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Basic Information</h3>
                         <div>
                             <label htmlFor="firstName" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">First Name *</label>
                             <input

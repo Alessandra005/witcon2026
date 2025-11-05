@@ -1,5 +1,6 @@
 #attendees/models.py
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 class Attendee(models.Model):
     # Basic info
@@ -153,7 +154,12 @@ class Attendee(models.Model):
         ('Peanuts', 'Peanuts'), ('Tree nuts', 'Tree nuts'), ('Wheat', 'Wheat'), ('Soybeans', 'Soybeans'), 
         ('Sesame', 'Sesame')
     ]
-    food_allergies = models.JSONField(default=list, blank=True)
+    # food_allergies = models.JSONField(default=list, blank=True)
+    food_allergies = ArrayField(
+        models.CharField(max_length=50),
+        blank=True,
+        default=list
+    )
     custom_allergy = models.CharField(max_length=100, blank=True)
 
     SHIRT_SIZES = [
