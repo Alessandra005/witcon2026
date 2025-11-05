@@ -64,6 +64,10 @@ class AttendeeSerializer(serializers.ModelSerializer):
     codeOfConduct = serializers.BooleanField(source='code_of_conduct', required=False)
     photographyConsent = serializers.BooleanField(source='photography_consent', required=False)
 
+    # Profile image field 
+    profileImage = serializers.CharField(required=False)
+    
+
 
     class Meta:
         model = Attendee
@@ -87,6 +91,7 @@ class AttendeeSerializer(serializers.ModelSerializer):
             'checked_in', 'created_at', 'updated_at',
         )
         read_only_fields = ('id', 'created_at', 'updated_at', 'checked_in')
+        
 
     def to_internal_value(self, data):
         data = data.copy()

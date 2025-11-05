@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
 import { Camera, Edit, X, FileText, ExternalLink } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Header from "../components/text/Header";
+import Title from "../components/text/Title";
+import Text from "../components/text/Text";
+
 
 interface AttendeeData {
   id?: number;
@@ -9,17 +13,20 @@ interface AttendeeData {
   lastName: string;
   email: string;
   school: string;
+  schoolOther?: string;
   fieldOfStudy: string;
   levelOfStudy: 'Undergraduate' | 'Graduate' | 'Post-Doctorate';
   yearLevel?: string;
   resume?: string;
   linkedin?: string;
   github?: string;
+  discord?: string;
+  profileImage?: string;
   shirtSize?: string;
 }
 
 export default function Profile() {
-  const { userId, logout } = useAuth(); // get logged-in user ID
+  const { userId, logout } = useAuth();               // get logged-in user ID
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
   const [showResumeViewer, setShowResumeViewer] = useState<boolean>(false);
@@ -27,13 +34,26 @@ export default function Profile() {
   const [error, setError] = useState<string>('');
 
   const [attendeeData, setAttendeeData] = useState<AttendeeData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    school: '',
-    fieldOfStudy: '',
+    firstName: 'Ariana',
+    lastName: 'Casas',
+    email: 'aricasa@gmail.com',
+    school: 'Harvard University',
+    fieldOfStudy: 'Computer Science',
     levelOfStudy: 'Undergraduate',
+    discord: 'Ariana#1234',
+    linkedin: 'linkedin.com/in/ariana-casas',
+    github: 'github.com/ariana-casas',
   });
+  const iconOptions = [
+    "profilePic1.png",
+    "profilePic2.png",
+    "profilePic3.png",
+    "profilePic4.png",
+    "profilePic5.png",
+    "profilePic6.png",
+  ];
+
+  const [showIconPicker, setShowIconPicker] = useState(false);
 
   const [editData, setEditData] = useState<AttendeeData>({ ...attendeeData });
 
@@ -125,284 +145,217 @@ export default function Profile() {
   };
 
 
-  if (!userId) {
-    return (
-      <section className="space-y-4">
-        <h2 className="text-2xl font-bold">Login</h2>
-        <div className="bg-white border rounded p-6 text-center space-y-4">
-          <p>Please log in to view your attendee profile.</p>
-        </div>
-      </section>
-    );
-  }
+  // if (!userId) {
+  //   return (
+  //     <section className="space-y-4">
+  //       <h2 className="text-2xl font-bold">Login</h2>
+  //       <div className="bg-white border rounded p-6 text-center space-y-4">
+  //         <p>Please log in to view your attendee profile.</p>
+  //       </div>
+  //     </section>
+  //   );
+  // }
 
-  if (loading) return <p>Loading profile...</p>;
-  if (error) return <p className="text-red-600">Error: {error}</p>;
+  // if (loading) return <p>Loading profile...</p>;
+  // if (error) return <p className="text-red-600">Error: {error}</p>;
 
-  return (
-      <section className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Attendee Profile</h2>
-          <button
-            onClick={handleLogout}
-            className="text-sm text-gray-600 hover:text-gray-800 underline"
-          >
-            Logout
-          </button>
+return (
+  <section className="space-y-8 px-4 py-6">
+    {/* Profile Header */}
+    <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-xl">
+      <div className="flex items-center gap-4">
+        <div className="w-28 h-28 rounded-full border-4 border-[color:var(--color-primary-pink)] overflow-hidden">
+          <img
+            src={`/images/${attendeeData.profileImage || "profilePic1.png"}`}
+            alt="Profile Icon"
+            className="w-full h-full object-cover"
+          />
         </div>
-  
-        {/* Important Links */}
-        <div className="bg-white border rounded p-4">
-          <h3 className="font-semibold mb-3">Important Links</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <a
-              href="https://www.notion.so/WiTCON-2026-Attendee-Guide"
-              className="flex items-center gap-2 underline font-medium"
-              target="_blank"
-              rel="noopener noreferrer"
+        
+        <div className="flex flex-col items-start justify-center">
+          <h2 className="text-2xl font-bold text-[color:var(--color-primary-pink)]"> {attendeeData.firstName} {attendeeData.lastName}
+          </h2> 
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => setShowIconPicker(true)}
+              className="bg-[color:var(--color-secondary-yellow)] text-[color:var(--color-primary-pink)] px-3 py-1 rounded-full hover:bg-[color:var(--color-primary-yellow)] transition"
             >
-              <ExternalLink className="w-4 h-4" />
-              WiTCON '26 Attendee Guide
-            </a>
-            <a
-              href="#"
-              className="flex items-center gap-2 underline font-medium"
+              Change Icon
+            </button>
+            <button
+              onClick={handleCheckIn}
+              className="bg-[color:var(--color-secondary-yellow)] text-[color:var(--color-primary-pink)] px-3 py-1 rounded-full hover:bg-[color:var(--color-primary-yellow)] transition"
             >
-              <ExternalLink className="w-4 h-4" />
-              Report an Incident
-            </a>
-            <a
-              href="https://linktr.ee/wicsfiu"
-              className="flex items-center gap-2 underline font-medium"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <ExternalLink className="w-4 h-4" />
-              WiCS Social Media + Discord
-            </a>
+              Check In
+            </button>
           </div>
         </div>
-  
-        {/* Check-In Section */}
-        <div className="bg-white border rounded p-4">
-          <h3 className="font-semibold mb-3">Event Check-In</h3>
-          <button
-            onClick={handleCheckIn}
-            className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900"
-          >
-            <Camera className="w-4 h-4" />
-            Check In to WiTCON
-          </button>
-          <p className="text-sm text-gray-600 mt-2">
-            Use this to check in when you arrive at the conference
-          </p>
+      </div>
+
+      {/* Right: Edit Button */}
+      <button onClick={handleEdit} className="mt-4 md:mt-0">
+        <img
+          src="/images/editIcon.png"
+          alt="Edit"
+          className="w-8 h-8 hover:scale-105 transition-transform"
+        />
+      </button>
+    </div>
+
+    {/* Profile Information */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 items-start">
+      {/* Academic Info */}
+      <div className="bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl shadow-md space-y-4">
+        {/* Field of Study */}
+        <div className="flex items-center gap-4">
+            <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px]">Major:</label>
+            <div className="flex-1">
+              <input
+                type="text"
+                value={attendeeData.fieldOfStudy || ""}
+                readOnly
+                className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+              />
+            </div>
+          </div>
+        {/* School */}
+        <div className="flex items-center gap-4">
+            <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px]">School:</label>
+            <div className="flex-1">
+              <input
+                type="text"
+                value={attendeeData.school || attendeeData.schoolOther || ""}
+                readOnly
+                className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+              />
+            </div>
+          </div>
+        {/* Level of Study */}
+        <div className="flex items-center gap-4">
+            <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px]">Level of Study:</label>
+            <div className="flex-1">
+              <input
+                type="text"
+                value={attendeeData.levelOfStudy || ""}
+                readOnly
+                className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+              />
+            </div>
+          </div>
+      </div>
+
+      {/* Resume & Socials */}
+      <div className="bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl shadow-md space-y-4">
+        {/* Resume Upload Section */}
+        <div className="flex items-center gap-4">
+          <img src="/images/pdfIcon.png" alt="PDF Icon" className="w-20 h-20" />
+            <p className="text-sm text-[color:var(--color-primary-brown)] font-[Actor] text-center w-full">
+              You only have a limit of 2 more resume uploads.
+            </p>
         </div>
-  
-        {/* Profile Information */}
-        <div className="bg-white border rounded p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold">Profile Information</h3>
-            {!isEditing ? (
-              <button
-                onClick={handleEdit}
-                className="flex items-center gap-2 underline"
+
+        {/* LinkedIn */}
+        <div className="flex items-center gap-4">
+          <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px]">LinkedIn:</label>
+            <input
+              type="text"
+              value={attendeeData.linkedin || ""}
+              readOnly
+              className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+            />
+        </div>
+        {/* GitHub */}
+        <div className="flex items-center gap-4">
+          <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px] w-fit min-w-[100px]">GitHub:</label>
+          <input
+            type="text"
+            value={attendeeData.github || ""}
+            readOnly
+            className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+          />
+        </div>
+
+        {/* Discord */}
+        <div className="flex items-center gap-4">
+          <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px]">Discord Username:</label>
+          <input
+            type="text"
+            value={attendeeData.discord || ""}
+            readOnly
+            className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+          />
+        </div>
+      </div>
+
+      {/* Witcon Resources */}
+      <div className="bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl shadow-md space-y-4">
+        <h3 className="font-semibold text-lg text-[color:var(--color-primary-brown)]">Make the best of WiTCON</h3>
+        
+        {/* WiTCON  ‘26 Attendee Guide  */}
+          <div className="flex items-center gap-3">
+            <img src="/images/notionIcon.png" alt="Notion Icon" className="w-6 h-6" />
+              <a
+                href="https://www.notion.so/WiTCON-2026-Attendee-Guide"
+                target="_blank"
+                className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
               >
-                <Edit className="w-4 h-4" />
-                Edit Profile
-              </button>
-            ) : (
-              <div className="space-x-2">
-                <button
-                  onClick={handleSave}
-                  className="bg-gray-800 text-white px-3 py-1 text-sm rounded hover:bg-gray-900"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="border px-3 py-1 text-sm rounded hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
+                WiTCON  ‘26 Attendee Guide 
+              </a>
+          </div>  
+
+        {/* Discord */}
+          <div className="flex items-center gap-3">
+            <img src="/images/discordIcon.png" alt="Discord Icon" className="w-6 h-6" />
+              <a
+                href="https://discord.gg/wicsfiu"
+                target="_blank"
+                className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+              >
+                WiCS Discord
+              </a>
+          </div>        
+        
+        {/* LinkedIn */}
+          <div className="flex items-center gap-3">
+            <img src="/images/linkedInIcon.png" alt="Linkedin Icon" className="w-6 h-6" />
+              <a
+                href="https://www.linkedin.com/company/wicsatfiu/"
+                target="_blank"
+                className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+              >
+                WiCS LinkedIn
+              </a>
           </div>
-  
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { label: 'First Name', field: 'firstName' as const },
-              { label: 'Last Name', field: 'lastName' as const },
-              { label: 'Email', field: 'email' as const },
-              { label: 'School', field: 'school' as const },
-              { label: 'Field of Study', field: 'fieldOfStudy' as const },
-              { label: 'Level of Study', field: 'levelOfStudy' as const },
-              { label: 'LinkedIn', field: 'linkedin' as const },
-              { label: 'GitHub', field: 'github' as const },
-            ].map(({ label, field }) => (
-              <div key={field}>
-                <label className="block font-medium text-sm">{label}</label>
-                {isEditing ? (
-                  field === 'levelOfStudy' ? (
-                    <select
-                      value={editData.levelOfStudy}
-                      onChange={(e) =>
-                        handleInputChange('levelOfStudy', e.target.value as AttendeeData['levelOfStudy'])
-                      }
-                      className="w-full border rounded px-3 py-2"
-                    >
-                      <option value="Undergraduate">Undergraduate</option>
-                      <option value="Graduate">Graduate</option>
-                      <option value="Post-Doctorate">Post-Doctorate</option>
-                    </select>
-                  ) : (
-                    <input
-                      type={field === 'email' ? 'email' : field === 'linkedin' || field === 'github' ? 'url' : 'text'}
-                      value={editData[field] || ''}
-                      onChange={(e) => handleInputChange(field, e.target.value as any)}
-                      className="w-full border rounded px-3 py-2"
-                    />
-                  )
-                ) : field === 'linkedin' || field === 'github' ? (
-                  <p className="py-2">
-                    {attendeeData[field] ? (
-                      <a
-                        href={attendeeData[field]}
-                        className="underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View {label}
-                      </a>
-                    ) : (
-                      'Not provided'
-                    )}
-                  </p>
-                ) : field === 'levelOfStudy' ? (
-                  <p className="py-2">
-                    {attendeeData.levelOfStudy}{' '}
-                    {attendeeData.yearLevel && `- ${attendeeData.yearLevel}`}
-                  </p>
-                ) : (
-                  <p className="py-2">{attendeeData[field]}</p>
-                )}
-              </div>
-            ))}
+        {/* Instagram */}
+          <div className="flex items-center gap-3">
+            <img src="/images/instagramIcon.png" alt="Instagram Icon" className="w-6 h-6" />
+              <a
+                href="https://instagram.com/wicsfiu"
+                target="_blank"
+                className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+              >
+                WiCS Instagram
+              </a>
           </div>
-        </div>
-  
-        {/* Resume Section */}
-        <div className="bg-white border rounded p-4">
-          <h3 className="font-semibold mb-4">Resume</h3>
-  
-          {attendeeData.resume ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <FileText className="w-8 h-8 text-gray-600" />
-                <div>
-                  <p className="font-medium">{attendeeData.resume}</p>
-                  <p className="text-sm text-gray-600">Current resume on file</p>
-                </div>
-              </div>
-              <div className="space-x-2">
-                <button
-                  onClick={() => setShowResumeViewer(true)}
-                  className="underline text-sm"
-                >
-                  View Resume
-                </button>
-                <label className="bg-gray-800 text-white px-3 py-1 text-sm rounded hover:bg-gray-900 cursor-pointer">
-                  Update Resume
-                  <input
-                    type="file"
-                    onChange={handleResumeUpdate}
-                    className="hidden"
-                    accept=".pdf,.doc,.docx"
-                  />
-                </label>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-6">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 mb-3">No resume uploaded</p>
-              <label className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900 cursor-pointer">
-                Upload Resume
-                <input
-                  type="file"
-                  onChange={handleResumeUpdate}
-                  className="hidden"
-                  accept=".pdf,.doc,.docx"
-                />
-              </label>
-            </div>
-          )}
-        </div>
-  
-        {/* QR Scanner Modal */}
-        {showQRScanner && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold">Scan QR Code</h3>
-                <button
-                  onClick={() => setShowQRScanner(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-  
-              <div className="text-center space-y-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg h-64 flex items-center justify-center">
-                  <div className="text-center">
-                    <Camera className="w-16 h-16 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">Camera view would appear here</p>
-                    <p className="text-sm text-gray-500">
-                      Point your camera at the QR code
-                    </p>
-                  </div>
-                </div>
-  
-                <button
-                  onClick={handleQRScan}
-                  className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900"
-                >
-                  Simulate QR Scan
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-  
-        {/* Resume Viewer Modal */}
-        {showResumeViewer && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg max-w-4xl w-full mx-4 h-5/6">
-              <div className="flex justify-between items-center p-4 border-b">
-                <h3 className="font-semibold">{attendeeData.resume}</h3>
-                <button
-                  onClick={() => setShowResumeViewer(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-  
-              <div className="p-4 h-full">
-                <div className="border rounded h-full flex items-center justify-center bg-gray-50">
-                  <div className="text-center">
-                    <FileText className="w-24 h-24 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Resume preview would appear here</p>
-                    <p className="text-sm text-gray-500">
-                      PDF viewer or document preview
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
-    );
-  }
+      
+      {/* REPORT AN INCIDENT box */}
+      </div>
+      <div className="bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl shadow-md space-y-4">
+
+        <h3 className="font-semibold text-2xl text-[color:var(--color-primary-brown)]">REPORT AN INCIDENT</h3>
+        <p className="text-sm text-gray-700">
+          Please, if you feel uncomfortable or witness inappropriate behavior at WiTCON. Please report it using the link below.
+        </p>
+          <a
+            href="https://discord.gg/wicsfiu"
+            target="_blank"
+            className="inline-block bg-[color:var(--color-primary-pink)] text-[color:var(--color-tertiary-yellow)] px-4 py-2 rounded-full hover:bg-pink-700 transition"
+          >
+            REPORT
+        </a>
+      </div>
+    </div>
+  </section>
+);
+}
   
