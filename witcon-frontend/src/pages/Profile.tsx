@@ -160,7 +160,8 @@ export default function Profile() {
   // if (error) return <p className="text-red-600">Error: {error}</p>;
 
 return (
-  <section className="space-y-8 px-4 py-6">
+  <main className="max-w-6xl mx-auto my-10 px-4 space-y-10 font-[Actor]">
+  <section className="mb-10">
     {/* Profile Header */}
     <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-xl">
       <div className="flex items-center gap-4">
@@ -175,7 +176,7 @@ return (
         <div className="flex flex-col items-start justify-center">
           <h2 className="text-2xl font-bold text-[color:var(--color-primary-pink)]"> {attendeeData.firstName} {attendeeData.lastName}
           </h2> 
-          <div className="flex gap-2 mt-2">
+          <div className="flex gap-3 mt-3">
             <button
               onClick={() => setShowIconPicker(true)}
               className="bg-[color:var(--color-secondary-yellow)] text-[color:var(--color-primary-pink)] px-3 py-1 rounded-full hover:bg-[color:var(--color-primary-yellow)] transition"
@@ -201,11 +202,12 @@ return (
         />
       </button>
     </div>
+    </section>
 
-    {/* Profile Information */}
+    <section className="space-y-8 px-4 py-6grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 items-start">
+    {/* Academic Info */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 items-start">
-      {/* Academic Info */}
-      <div className="bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl shadow-md space-y-4">
+      <div className="bg-[color:var(--color-tertiary-yellow)] p-8 rounded-xl shadow-md flex flex-col justify-between space-y-4">
         {/* Field of Study */}
         <div className="flex items-center gap-4">
             <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px]">Major:</label>
@@ -214,7 +216,7 @@ return (
                 type="text"
                 value={attendeeData.fieldOfStudy || ""}
                 readOnly
-                className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+                className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
               />
             </div>
           </div>
@@ -226,7 +228,7 @@ return (
                 type="text"
                 value={attendeeData.school || attendeeData.schoolOther || ""}
                 readOnly
-                className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+                className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
               />
             </div>
           </div>
@@ -238,7 +240,7 @@ return (
                 type="text"
                 value={attendeeData.levelOfStudy || ""}
                 readOnly
-                className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+                className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
               />
             </div>
           </div>
@@ -287,6 +289,7 @@ return (
         </div>
       </div>
 
+      
       {/* Witcon Resources */}
       <div className="bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl shadow-md space-y-4">
         <h3 className="font-semibold text-lg text-[color:var(--color-primary-brown)]">Make the best of WiTCON</h3>
@@ -337,9 +340,10 @@ return (
                 WiCS Instagram
               </a>
           </div>
-      
-      {/* REPORT AN INCIDENT box */}
       </div>
+
+         
+      {/* REPORT AN INCIDENT box */}
       <div className="bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl shadow-md space-y-4">
 
         <h3 className="font-semibold text-2xl text-[color:var(--color-primary-brown)]">REPORT AN INCIDENT</h3>
@@ -356,6 +360,7 @@ return (
       </div>
     </div>
   </section>
+  </main>
 );
 }
   
