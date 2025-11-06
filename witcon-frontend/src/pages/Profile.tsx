@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
 import { Camera, Edit, X, FileText, ExternalLink } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Title from '../components/text/Title';
+import Text from '../components/text/Text';
 import Header from "../components/text/Header";
-import Title from "../components/text/Title";
-import Text from "../components/text/Text";
 
 
 interface AttendeeData {
@@ -44,6 +44,9 @@ export default function Profile() {
     linkedin: 'linkedin.com/in/ariana-casas',
     github: 'github.com/ariana-casas',
   });
+
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(attendeeData.profileImage || "profilePic1.png");
   const iconOptions = [
     "profilePic1.png",
     "profilePic2.png",
@@ -53,7 +56,6 @@ export default function Profile() {
     "profilePic6.png",
   ];
 
-  const [showIconPicker, setShowIconPicker] = useState(false);
 
   const [editData, setEditData] = useState<AttendeeData>({ ...attendeeData });
 
@@ -160,9 +162,9 @@ export default function Profile() {
   // if (error) return <p className="text-red-600">Error: {error}</p>;
 
 
-  function InfoSection({ children }: { children: React.ReactNode }) {
+function InfoSection({ children }: { children: React.ReactNode }) {
   return (
-    <div className="break-inside-avoid mb-6 bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl shadow-md space-y-4">
+    <div className="break-inside-avoid mb-6 bg-[color:var(--color-tertiary-yellow)] p-6 rounded-xl space-y-4">
       {children}
     </div>
   );
@@ -171,14 +173,14 @@ export default function Profile() {
 {/* Academic Info Box Component */}
 const AcademicInfoBox = (
   <InfoSection>
-    {/* Field of Study */}
+    {/* Field of Study / Major */}
     <div className="flex items-center gap-4">
       <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px]">Major:</label>
       <input
-        type="text"
+        type="Text"
         value={attendeeData.fieldOfStudy || ""}
         readOnly
-        className="flex-1 px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+        className="flex-1 px-4 py-2 rounded-full bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
       />
     </div>
 
@@ -186,10 +188,10 @@ const AcademicInfoBox = (
     <div className="flex items-center gap-4">
       <label className="text-[color:var(--color-primary-brown)] font-medium min-w-[100px]">School:</label>
       <input
-        type="text"
+        type="Text"
         value={attendeeData.school || attendeeData.schoolOther || ""}
         readOnly
-        className="flex-1 px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+        className="flex-1 px-4 py-2 rounded-full bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
       />
     </div>
 
@@ -200,7 +202,7 @@ const AcademicInfoBox = (
         type="text"
         value={attendeeData.levelOfStudy || ""}
         readOnly
-        className="flex-1 px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+        className="flex-1 px-4 py-2 rounded-full bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
       />
     </div>
   </InfoSection>
@@ -211,7 +213,7 @@ const ResumeSocialBox = (
   <InfoSection>
     {/* Resume Upload Section */}
     <div className="flex items-center gap-4">
-      <img src="src/images/pdfIcon.png" alt="PDF Icon" className="w-20 h-20" />
+      <img src="public/images/pdfIcon.png" alt="PDF Icon" className="w-20 h-20" />
       <p className="text-sm text-[color:var(--color-primary-brown)] font-[Actor] text-center w-full">
         You only have a limit of 2 more resume uploads.
       </p>
@@ -224,7 +226,7 @@ const ResumeSocialBox = (
         type="text"
         value={attendeeData.linkedin || ""}
         readOnly
-        className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+        className="flex-1 px-4 py-2 rounded-full bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
       />
     </div>
 
@@ -235,7 +237,7 @@ const ResumeSocialBox = (
         type="text"
         value={attendeeData.github || ""}
         readOnly
-        className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+        className="flex-1 px-4 py-2 rounded-full bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
       />
     </div>
 
@@ -246,7 +248,7 @@ const ResumeSocialBox = (
         type="text"
         value={attendeeData.discord || ""}
         readOnly
-        className="flex-1 px-4 py-2 rounded-full bg-white text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
+        className="flex-1 px-4 py-2 rounded-full bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor] w-fit min-w-[150px]"
       />
     </div>
   </InfoSection>
@@ -258,11 +260,11 @@ const ResumeSocialBox = (
     <h3 className="font-semibold text-lg text-[color:var(--color-primary-brown)]">Make the best of WiTCON</h3>
     {/* WiTCON ‘26 Attendee Guide */}
     <div className="flex items-center gap-3">
-      <img src="src/images/notionIcon.png" alt="Notion Icon" className="w-6 h-6" />
+      <img src="/images/notionIcon.png" alt="Notion Icon" className="w-8 h-8" />
       <a
         href="https://www.notion.so/WiTCON-2026-Attendee-Guide"
         target="_blank"
-        className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+        className="w-full px-4 py-2 rounded-4xl bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor]"
       >
         WiTCON ‘26 Attendee Guide
       </a>
@@ -270,11 +272,11 @@ const ResumeSocialBox = (
 
     {/* Discord */}
     <div className="flex items-center gap-3">
-      <img src="src/images/discordIcon.png" alt="Discord Icon" className="w-6 h-6" />
+      <img src="/images/discordIcon.png" alt="Discord Icon" className="w-8 h-8" />
       <a
         href="https://discord.gg/wicsfiu"
         target="_blank"
-        className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+        className="w-full px-4 py-2 rounded-4xl bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor]"
       >
         WiCS Discord
       </a>
@@ -282,11 +284,11 @@ const ResumeSocialBox = (
 
     {/* LinkedIn */}
     <div className="flex items-center gap-3">
-      <img src="src/images/linkedInIcon.png" alt="LinkedIn Icon" className="w-6 h-6" />
+      <img src="/images/linkedInIcon.png" alt="LinkedIn Icon" className="w-8 h-8" />
       <a
         href="https://www.linkedin.com/company/wicsatfiu/"
         target="_blank"
-        className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+        className="w-full px-4 py-2 rounded-4xl bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor]"
       >
         WiCS LinkedIn
       </a>
@@ -294,11 +296,11 @@ const ResumeSocialBox = (
 
     {/* Instagram */}
     <div className="flex items-center gap-3">
-      <img src="src/images/instagramIcon.png" alt="Instagram Icon" className="w-6 h-6" />
+      <img src="/images/instagramIcon.png" alt="Instagram Icon" className="w-8 h-8" />
       <a
         href="https://instagram.com/wicsfiu"
         target="_blank"
-        className="w-full px-4 py-2 rounded-4xl bg-white text-[color:var(--color-primary-brown)] font-[Actor]"
+        className="w-full px-4 py-2 rounded-4xl bg-[#FFF6F6] text-[color:var(--color-primary-brown)] font-[Actor]"
       >
         WiCS Instagram
       </a>
@@ -310,7 +312,7 @@ const ResumeSocialBox = (
 const ReportIncidentBox = (
   <InfoSection>
     <h3 className="font-semibold text-2xl text-[color:var(--color-primary-brown)]">REPORT AN INCIDENT</h3>
-    <p className="text-sm text-gray-700">
+    <p className="text-s text-[color:var(--color-primary-brown)]">
       Please, if you feel uncomfortable or witness inappropriate behavior at WiTCON. Please report it using the link below.
     </p>
     <a
@@ -325,29 +327,49 @@ const ReportIncidentBox = (
 
 
 return (
-  <main className="max-w-6xl mx-auto my-10 px-4 space-y-10 font-[Actor]">
-  <section className="mb-10">
+  <main className="w-full max-w-screen-xl mx-auto px-6">
+  <section className="mb-2">
     {/* Profile Header */}
     <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-xl">
       <div className="flex items-center gap-4">
-        <div className="w-28 h-28 rounded-full border-4 border-[color:var(--color-primary-pink)] overflow-hidden">
+        <div className="w-32 h-32 rounded-full border-6 border-[color:var(--color-primary-pink)] overflow-hidden">
           <img
-            src={`src/images/${attendeeData.profileImage || "profilePic1.png"}`}
+            src={`/images/${selectedImage}`}
             alt="Profile Icon"
             className="w-full h-full object-cover"
           />
         </div>
         
         <div className="flex flex-col items-start justify-center">
-          <h2 className="text-2xl font-bold text-[color:var(--color-primary-pink)]"> {attendeeData.firstName} {attendeeData.lastName}
-          </h2> 
+          <Title className="font-bold"> {attendeeData.firstName} {attendeeData.lastName}
+          </Title> 
           <div className="flex gap-3 mt-3">
+          <div className="relative">
             <button
               onClick={() => setShowIconPicker(true)}
               className="bg-[color:var(--color-secondary-yellow)] text-[color:var(--color-primary-pink)] px-3 py-1 rounded-full hover:bg-[color:var(--color-primary-yellow)] transition"
             >
               Change Icon
             </button>
+
+            {showIconPicker && (
+            <div className="absolute top-full left-0 mt-2 z-50 w-72 sm:w-80 bg-white border border-[color:var(--color-primary-pink)] rounded-xl shadow-lg p-4 grid grid-cols-3 gap-4">
+              {iconOptions.map((img, i) => (
+                <img
+                  key={i}
+                  src={`/images/${img}`}
+                  alt={`Icon ${i + 1}`}
+                  className="w-20 h-20 rounded-full object-cover border-2 border-transparent hover:border-4 hover:border-[color:var(--color-primary-pink)]"
+                  onClick={() => {
+                      setSelectedImage(img);
+                      setShowIconPicker(false);
+                  }}
+                />
+              ))}
+            </div>
+            )}
+          </div>
+
             <button
               onClick={handleCheckIn}
               className="bg-[color:var(--color-secondary-yellow)] text-[color:var(--color-primary-pink)] px-3 py-1 rounded-full hover:bg-[color:var(--color-primary-yellow)] transition"
@@ -361,16 +383,16 @@ return (
       {/* Right: Edit Button */}
       <button onClick={handleEdit} className="mt-4 md:mt-0">
         <img
-          src="src/images/editIcon.png"
+          src="/images/editIcon.png"
           alt="Edit"
-          className="w-8 h-8 hover:scale-105 transition-transform"
+          className="w-12 h-12 hover:scale-105 transition-transform"
         />
       </button>
     </div>
     </section>
 
     <section>
-    <div className="columns-1 md:columns-2 gap-6">
+    <div className="columns-1 md:columns-2 gap-6 mt-2">
       {AcademicInfoBox}
       {WiCSResourcesBox}
       {ResumeSocialBox}
@@ -380,4 +402,3 @@ return (
   </main>
 );
 }
-  
