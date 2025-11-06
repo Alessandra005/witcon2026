@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 
 class Attendee(models.Model):
     # Basic info
+    #id = models.CharField(max_length=255, unique=True) # to link with auth system
     first_name  = models.CharField(max_length=100)
     last_name   = models.CharField(max_length=100)
     email       = models.EmailField(unique=True)

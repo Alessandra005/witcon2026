@@ -11,7 +11,7 @@
 # attendees/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from .views import AttendeeCreateView, router  # import your new view and existing router
+from .views import AttendeeCreateView, get_attendee_by_user_id, router  # import your new view and existing router
 
 urlpatterns = [
     # Admin panel
@@ -22,6 +22,9 @@ urlpatterns = [
 
     # Protected admin endpoints (attendees list, detail, etc.)
     path('', include(router.urls)),
+
+    # Endpoint to get attendee by user ID
+    path('attendees/<str:user_id>/', get_attendee_by_user_id, name='attendee-by-user-id'),
 ]
 
 

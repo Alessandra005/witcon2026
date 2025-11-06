@@ -1,6 +1,7 @@
 // witcon-frontend/src/pages/Register.tsx
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
     firstName: string;
@@ -297,6 +298,7 @@ export default function Register() {
             } else {
                 const data = await res.json();
                 console.log("Registration success:", data);
+                navigate('/profile', { state: { formData } });
                 setIsSubmitted(true);
             }
         } catch (error) {
@@ -304,6 +306,9 @@ export default function Register() {
             setErrors({ submit: "Registration failed. Please try again." });
         }
     };
+
+    const navigate = useNavigate();
+
 
     if (isSubmitted) {
         return (
@@ -332,10 +337,9 @@ return (
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Basic Information */}
-
-                <div className="bg-[color:var(--color-tertiary-yellow)] rounded-xl p-6 shadow-sm space-y-6">
+                <div className="col-span-1 bg-[color:var(--color-tertiary-yellow)] rounded-xl p-6 shadow-sm space-y-6">
                 <div className="flex justify-between items-start">
                     <h3 className="text-2xl font-bold text-[color:var(--color-primary-pink)]"
                     style={{ fontFamily: 'Actor, sans-serif' }}>Register here</h3>
@@ -433,10 +437,79 @@ return (
                         {errors.dateOfBirth && <div className="text-red-600 text-sm mt-1">{errors.dateOfBirth}</div>}
                     </div>
                 </div>
-                
+               
+
+                {/* Social Profiles */}
+                <div className="col-span-1 bg-[color:var(--color-secondary-pink)] rounded-xl p-6 shadow-sm space-y-6">
+                    <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Social Profiles (Optional)</h3>
+                    
+                    <div>
+                        <label htmlFor="linkedin" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">LinkedIn</label>
+                        <input
+                            id="linkedin"
+                            type="url"
+                            value={formData.linkedin}
+                            onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
+                            placeholder="https://linkedin.com/in/yourprofile"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="github" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">GitHub Profile</label>
+                        <input
+                            id="github"
+                            type="url"
+                            value={formData.github}
+                            onChange={(e) => handleInputChange('github', e.target.value)}
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
+                            placeholder="https://github.com/yourusername"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="website" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Personal Website</label>
+                        <input
+                            id="website"
+                            type="url"
+                            value={formData.website}
+                            onChange={(e) => handleInputChange('website', e.target.value)}
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
+                            placeholder="https://yourwebsite.com"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="discord" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Discord Username</label>
+                        <input
+                            id="discord"
+                            type="text"
+                            value={formData.discord}
+                            onChange={(e) => handleInputChange('discord', e.target.value)}
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
+                            placeholder="username#1234"
+                        />
+                    </div>
+                    
+                    {/* Resume */}
+                    <div>
+                        <label htmlFor="resume" className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Resume Upload*</label>
+                        <div className="border-2 border-dashed border-[color:var(--color-primary-pink)] rounded-xl p-4 bg-white text-center hover:border-pink-500 transition">
+                        <input
+                            id="resume"
+                            type="file"
+                            onChange={handleFileChange}
+                            className="w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[color:var(--color-primary-pink)] file:text-white hover:file:bg-pink-600"
+                            accept=".pdf"
+                            required
+                        />
+                        {errors.resume && <div className="text-red-600 text-sm mt-2">{errors.resume}</div>}
+                        </div>
+                    </div>
+                </div>
 
                 {/* Demographics */}
-                <div className="bg-[color:var(--color-tertiary-yellow)] rounded-xl p-6 shadow-sm space-y-6">
+                <div className="col-span-1 bg-[color:var(--color-tertiary-yellow)] rounded-xl p-6 shadow-sm space-y-6">
                     <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>
                         Demographics</h3>
                     <div>
@@ -532,8 +605,9 @@ return (
                     </div>
                 </div>
 
+                
                 {/* Academic Information */}
-                <div className="bg-[color:var(--color-secondary-pink)] rounded-xl p-6 shadow-sm space-y-6">
+                <div className="col-span-1 bg-[color:var(--color-secondary-pink)] rounded-xl p-6 shadow-sm space-y-6">
                     <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Academic Information</h3>
                     
                     {/* Level of Study */}
@@ -656,77 +730,8 @@ return (
                     )}
                 </div>
 
-                {/* Social Profiles */}
-                <div className="bg-[color:var(--color-secondary-pink)] rounded-xl p-6 shadow-sm space-y-6">
-                    <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Social Profiles (Optional)</h3>
-                    
-                    <div>
-                        <label htmlFor="linkedin" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">LinkedIn</label>
-                        <input
-                            id="linkedin"
-                            type="url"
-                            value={formData.linkedin}
-                            onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
-                            placeholder="https://linkedin.com/in/yourprofile"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="github" className="block text-sm font-medium text-[color:var(--color-primary-brown)]">GitHub Profile</label>
-                        <input
-                            id="github"
-                            type="url"
-                            value={formData.github}
-                            onChange={(e) => handleInputChange('github', e.target.value)}
-                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
-                            placeholder="https://github.com/yourusername"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="website" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Personal Website</label>
-                        <input
-                            id="website"
-                            type="url"
-                            value={formData.website}
-                            onChange={(e) => handleInputChange('website', e.target.value)}
-                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
-                            placeholder="https://yourwebsite.com"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="discord" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Discord Username</label>
-                        <input
-                            id="discord"
-                            type="text"
-                            value={formData.discord}
-                            onChange={(e) => handleInputChange('discord', e.target.value)}
-                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
-                            placeholder="username#1234"
-                        />
-                    </div>
-                    
-                    {/* Resume */}
-                    <div>
-                        <label htmlFor="resume" className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Resume Upload*</label>
-                        <div className="border-2 border-dashed border-[color:var(--color-primary-pink)] rounded-xl p-4 bg-white text-center hover:border-pink-500 transition">
-                        <input
-                            id="resume"
-                            type="file"
-                            onChange={handleFileChange}
-                            className="w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[color:var(--color-primary-pink)] file:text-white hover:file:bg-pink-600"
-                            accept=".pdf"
-                            required
-                        />
-                        {errors.resume && <div className="text-red-600 text-sm mt-2">{errors.resume}</div>}
-                        </div>
-                    </div>
-                </div>
-
                 {/* Additional Information */}
-                <div className="bg-[color:var(--color-secondary-mint)] rounded-xl p-6 shadow-sm space-y-6">
+                <div className="md:col-span-2 bg-[color:var(--color-secondary-mint)] rounded-xl p-6 shadow-sm space-y-6">
                     <h3 className="text-xl font-bold text-[color:var(--color-primary-pink)]" style={{ fontFamily: 'Actor, sans-serif' }}>Additional Information</h3>
                     
                     {/* Shirt size */}
@@ -747,27 +752,26 @@ return (
                         {errors.shirtSize && <div className="text-red-600 text-sm mt-1">{errors.shirtSize}</div>}
                     </div>
 
-                {/* Food Allergies dropdown */}
-                <div className="relative">
-                    <label htmlFor="foodAllergies" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Food Allergies</label>
-                    {/* Dropdown container */}
-                    <button
-                        type="button"
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:ring-pink-500 focus:border-pink-500"
-                    >
-                        {formData.foodAllergies.length > 0
-                            ? formData.foodAllergies.join(", ")
-                            : "Select allergies"}
-                        <span className="ml-2">
-                            {isDropdownOpen ? "▲" : "▼"}
-                        </span>
-                    </button>
+                    {/* Food Allergies dropdown */}
+                    <div className="relative">
+                      <label htmlFor="foodAllergies" className="block text-m font-medium text-[color:var(--color-primary-brown)]">Food Allergies</label>
 
-                    {/* Dropdown menu */}
-                    {isDropdownOpen && (
-                        <div className="mt-2 space-y-2">
-                            {allergyOptions.map((allergy) => (
+                        {/* Styled dropdown trigger */}
+                        <button
+                            type="button"
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="mt-1 block w-full px-4 py-2 rounded-full bg-white border border-gray-300 text-left focus:ring-pink-500 focus:border-pink-500"
+                          >
+                            {formData.foodAllergies.length > 0
+                                ? formData.foodAllergies.join(", ")
+                                : "Select allergies"}
+                            <span className="float-right">{isDropdownOpen ? "▲" : "▼"}</span>
+                        </button>
+
+                        {/* Dropdown menu */}
+                        {isDropdownOpen && (
+                            <div className="absolute z-10 mt-2 w-full max-h-40 overflow-y-auto bg-white border border-gray-300 rounded-xl shadow-md p-4 space-y-2">
+                                {allergyOptions.map((allergy) => (
                                 <div key={allergy} className="flex items-center gap-2">
                                     <input
                                         type="checkbox"
@@ -784,43 +788,40 @@ return (
                                     <span className="text-m text-[color:var(--color-primary-brown)]">{allergy}</span>
                                 </div>
                             ))}
-                    
-                    {/* "Other" option */}
-                    <div className="flex items-center gap-2 mt-2">
-                        <input
-                            type="checkbox"
-                            value="Other"
-                            checked={formData.foodAllergies.includes("Other")}
-                            onChange={() => {
+
+                        {/* "Other" option */}
+                        <div className="flex items-center gap-2 mt-2">
+                            <input
+                                type="checkbox"
+                                value="Other"
+                                checked={formData.foodAllergies.includes("Other")}
+                                onChange={() => {
                                 const selected = formData.foodAllergies.includes("Other")
                                     ? formData.foodAllergies.filter((a) => a !== "Other")
                                     : [...formData.foodAllergies, "Other"];
                                 handleInputChange("foodAllergies", selected);
-                        }}
-                        className="accent-[color:var(--color-primary-pink)] w-4 h-4"
-                    />
-                    <span className="text-m text-[color:var(--color-primary-brown)]">Other</span>
-                    </div>
+                                }}
+                                className="accent-[color:var(--color-primary-pink)] w-4 h-4"
+                            />
+                            <span className="text-m text-[color:var(--color-primary-brown)]">Other</span>
+                        </div>
 
-                    {/* Custom input when "Other" selected */}
-                    {formData.foodAllergies.includes("Other") && (
-                        <input
-                            type="text"
-                            placeholder="Please specify"
-                            value={formData.customAllergy || ""}
-                            onChange={(e) =>
-                                handleInputChange("customAllergy", e.target.value)
-                            }
-                            className="w-full border-2 border-primary rounded-md px-3 py-2 mt-2 text-textBrown focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30"
-                        />
-                    )}
+                        {/* Custom input for "Other" */}
+                        {formData.foodAllergies.includes("Other") && (
+                            <input
+                                type="text"
+                                placeholder="Please specify"
+                                value={formData.customAllergy || ""}
+                                onChange={(e) => handleInputChange("customAllergy", e.target.value)}
+                                className="w-full border-2 border-primary rounded-md px-3 py-2 mt-2 text-textBrown focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/30"
+                            />
+                            )}
+                        </div>
+                        )}
                 </div>
-            )}
-        </div>
-        </div>
-
-                {/* Agreements */}
-                <div className="block text-m font-medium text-[color:var(--color-primary-brown)]">
+                
+                    {/* Agreements */}
+                <div className="space-y-4 text-m font-medium text-[color:var(--color-primary-brown)]">
                     <h3 className="font-semibold">Agreements</h3>
                     
                     <div>
@@ -856,12 +857,13 @@ return (
                 <div>
                     <button 
                         type="submit" 
-                        className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        className="w-full bg-[color:var(--color-primary-pink)] text-white font-semibold text-xl px-4 py-2 rounded hover:bg-[color:var(--color-primary-yellow)] transition"
                     >
                         Register
                     </button>
                 </div>
-            </form>
-        </section>
+            </div>
+        </form>
+    </section>
     );
 }

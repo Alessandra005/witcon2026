@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Camera, Edit, X, FileText, ExternalLink } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Title from '../components/text/Title';
@@ -58,6 +59,8 @@ export default function Profile() {
 
 
   const [editData, setEditData] = useState<AttendeeData>({ ...attendeeData });
+  const { state } = useLocation();
+  const formDataFromRegister = state?.formData;
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://witcon.duckdns.org/backend-api';
 
