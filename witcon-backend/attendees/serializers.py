@@ -87,7 +87,7 @@ class AttendeeSerializer(serializers.ModelSerializer):
             'foodAllergies', 'customAllergy',
             'shirtSize',
             'codeOfConduct', 'photographyConsent',
-            'resume',
+            'resume', 'profileImage',
             'checked_in', 'created_at', 'updated_at',
         )
         read_only_fields = ('id', 'created_at', 'updated_at', 'checked_in')
